@@ -1,0 +1,32 @@
+## exports
+export(
+  lmExact,
+  lmInfl,
+  lmPlot,
+  pvalPlot,
+  inflPlot,
+  slsePlot,
+  stability,
+  lmMult,
+  multPlot,
+  simInfl,
+  shinyInfl, 
+  lmThresh,
+  threshPlot,
+  stabPlot
+)
+
+## imports
+importFrom("graphics", "abline", "grid", "legend", "par", "plot", "points",
+           "axTicks", "lines", "segments", "barplot", "text", "arrows", "rect", "title")
+importFrom("stats", "coef", "lm", "optim", "residuals", "rnorm", "influence.measures",
+           "cor", "na.omit", "predict", "pt", "qt", "model.frame", "dt", "rt", "hatvalues",
+           "df.residual", "integrate", "fitted", "cor.test", "rstudent", "pf", "qf")
+importFrom("utils", "data", "flush.console")
+importFrom("grDevices", "rainbow", "heat.colors")
+import(shiny)
+import(knitr)
+import(markdown)
+## S3 methods
+
+

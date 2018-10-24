@@ -1,0 +1,5 @@
+dpois(1:6, 1)
+MAT <- matrix(NA, nrow = 1000000, ncol = 20)
+for (i in 1:1000000) MAT[i, ] <- rpois(20, 1)
+SUM <- apply(MAT, 1, function(x) sum(x == 1))/20
+print(mean(SUM))

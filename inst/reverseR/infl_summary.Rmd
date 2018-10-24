@@ -1,0 +1,29 @@
+---
+title: "Report for Influential Data in Linear Regression"
+author: "Andrej-Nikolai Spiess and Joel Tellinghuisen"
+date: ""
+output:
+  html_document:
+    toc: true
+    theme: united
+---
+
+### Regression summary
+
+#### Full model with all data points:
+```{r, echo = FALSE}
+summary(res.infl()[["fullModel"]])
+```
+#### Final model with influencer(s) removed:
+```{r, echo = FALSE}
+summary(res.infl()[["finalModel"]])
+```
+#### Influential data points:
+```{r, echo = FALSE}
+SEL <- res.infl()[["selected"]]
+res.infl()[["fullData"]][SEL, ]
+```
+#### Message:
+```{r, echo = FALSE}
+if (res.infl()[["prev"]]) print("ATTENTION: Slope p-value was reversed !")
+```

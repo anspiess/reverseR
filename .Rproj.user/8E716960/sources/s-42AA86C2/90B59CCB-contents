@@ -1,0 +1,19 @@
+dat2 <- dat2[, -1]
+
+for (i in 2:73){
+  print(i)
+  m1 <- pcrfit(dat2, cyc = 1, fluo = i, b4)
+  tryCatch ({EFF <- efficiency(m1)
+  temp <- print (EFF[["eff"]])},
+  error = function(e) {print(paste("model not fitted"))
+  })
+  write (temp, file = "dat.txt",append = TRUE, sep = " ")
+}
+
+
+dat3 <- dat2
+colnames(dat3)[1] <- "Cycles"
+
+ml <- modlist(dat2, model = l4, basecyc = 1:10)
+plot(ml, type = "single")
+
