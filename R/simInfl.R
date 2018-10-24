@@ -36,23 +36,18 @@ simInfl <- function(
     ## get reversal results
     RES <- lmInfl(LME$lm, verbose = FALSE, ...)
     
-    ## populate result matrix and increase counters
+    ## populate result matrix / model list, and increase counters
     seedVec[i] <- i
     pVec[i] <- RES$origP
     if (!is.null(RES$sel)) {
       MAT[i, ] <- as.numeric(RES$infl[RES$sel[1], ])
+      mList[[i]] <- LME$lm
       isRev <- isRev + 1
       counter(isRev)
     }
     
-    ## store all models
-    mList[[i]] <- LME$lm
-    
     ## break loop if 'nrev' reversals are counted
-    if (isRev == nrev) {
-      niter <- i
-      break
-    }
+    if (isRev == nrev) break
   }
  
   ## create result list
@@ -62,7 +57,7 @@ simInfl <- function(
   ## condense result matrix & model list
   sel <- which(is.na(MAT[, "Idx"]))
   MAT <- MAT[-sel, ]
-  mList <- mList[1:i]
+  mList <- mList[-sel]
   
   OUT <- list(models = mList, mat = MAT)
   return(OUT)

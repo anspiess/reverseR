@@ -4,7 +4,7 @@ LazyLoad: no
 LazyData: yes
 Title: Linear Regression Stability to Significance Reversal
 Version: 0.1
-Date: 2018-10-10
+Date: 2018-10-24
 Author: Andrej-Nikolai Spiess <a.spiess@uke.uni-hamburg.de>
         Michal Burdukiewicz <michalburdukiewicz@gmail.com>  
 Maintainer: Andrej-Nikolai Spiess <a.spiess@uke.uni-hamburg.de>

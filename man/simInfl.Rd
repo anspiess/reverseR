@@ -27,7 +27,7 @@ Loops over an undefined number of EXACT regressions (\code{\link{lmExact}}) with
 
 \value{
 A list with the following two items:
-\item{models}{the models of all linear regressions.}
+\item{models}{the linear models of all reversals.}
 \item{mat}{the stored matrix with the resulting parameters and influence measures for all \code{nrev} reversals.}
 }
 
