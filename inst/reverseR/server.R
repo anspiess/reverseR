@@ -45,9 +45,7 @@ shinyServer(function(input, output, session) {
                  h5(strong("dfb.Inter:"), "   dfbeta of intercept."),
                  h5(strong("dfb.Slope:"), "   dfbeta of slope."),
                  h5(strong("dffit:"), "       dffits."),
-                 h5(strong("cov.r:"), "       c
-                    
-                    ovariance ratio."),
+                 h5(strong("cov.r:"), "       covariance ratio."),
                  h5(strong("cook.d:"), "      Cook's distance."),
                  h5(strong("dfb.Slope:"), "   dfbeta of slope."),
                  h5(strong("hat:"), "         diagonal of hat matrix."),
