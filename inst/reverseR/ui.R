@@ -1,3 +1,7 @@
+library(shiny)
+library(reverseR)
+library(DT)
+
 fluidPage(
   tags$style(HTML(".shiny-input-container:not(.shiny-input-container-inline) {
                      width: 100%;}

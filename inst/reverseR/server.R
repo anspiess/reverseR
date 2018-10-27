@@ -1,3 +1,7 @@
+library(shiny)
+library(reverseR)
+library(DT)
+
 ## server for the Shiny app
 shinyServer(function(input, output, session) {
   
@@ -144,10 +148,13 @@ shinyServer(function(input, output, session) {
   ## hover over lmPlot
   output[["hover_info"]] <- renderPrint({
     cat("Data under cursor:\n")
-    NP <- nearPoints(res.infl()$infl[, c(1:5, 14)], input$plot_hover, 
-                    xvar = colnames(res.infl()$infl)[2],
-                    yvar = colnames(res.infl()$infl)[3], maxpoints = 1)
-    if (nrow(NP) == 0) cat("No data point.\n   ") else print(NP)
+    observeEvent(input$plot_hover, {
+      NP <- nearPoints(res.infl()$infl[, c(1:5, 14)], input$plot_hover, 
+                       xvar = colnames(res.infl()$infl)[2],
+                       yvar = colnames(res.infl()$infl)[3], maxpoints = 1)
+      if (nrow(NP) == 0) cat("No data point.\n   ") else print(NP)
+    })
+    
   })
   
   ## pvalPlot output
