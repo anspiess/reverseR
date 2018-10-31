@@ -2,18 +2,30 @@ library(shiny)
 library(reverseR)
 library(DT)
 
+options(shiny.maxRequestSize=10*1024^2)
+
+options(DT.options = list(dom = "Brtip",
+                          buttons = c("copy", "csv", "excel", "print"),
+                          paging = FALSE,
+                          searching = FALSE
+))
+
+filtering_DT <- function(x, ...)
+  datatable(x, ..., escape = FALSE, extensions = 'Buttons', filter = "top", rownames = FALSE)
+
+
 ## server for the Shiny app
 shinyServer(function(input, output, session) {
   
   ## input for x/y data or 'Example'
   imported.data <- reactive({
     if(input[["run.example"]] >= 1) impdat <- read.csv("XY-data.csv")
-   
+    
     if (!is.null(input[["input.file"]])) {  
       header <- input[["header"]]
       dec <- switch(input[["dec.type"]], dec1 = ".", dec2 = ",")
       sep <- switch(input[["sep.type"]], sep1 = ",", sep2 = " ", sep3 = "\t", sep4 = ";")
-     
+      
       impdat <- read.csv(input[["input.file"]][["datapath"]], header = header, sep = sep, dec = dec)
       
       if(input[["header"]] == FALSE) {
@@ -30,90 +42,90 @@ shinyServer(function(input, output, session) {
       tabPanel("No input detected", h3("No input detected! Run 'Example' or import data."))
     } else {
       tabsetPanel(id = "tabs", type = "pills",
-        tabPanel("Statistics", 
-                 p(""),
-                 h4("Message:"),
-                 h5("(The message 'Error: incorrect number of dimensions' would indicate wrong import parameters)"),
-                 verbatimTextOutput("message.output"),
-                 p(""),
-                 h4("Summary of full model (all data points):"),
-                 renderPrint({summary(res.infl()$origModel)}),
-                 p(""),
-                 h4("Statistical Analysis for each Leave-One-Out model. For abbreviations, see below Table."),
-                 output$DT <- DT::renderDataTable(signif(res.infl()[["infl"]], 5), 
-                   options = list(paging = FALSE, searching = FALSE),
-                   rownames = FALSE),
-                 h4("Legend:"),
-                 h5(strong("dSlope:"), "      difference to original slope."),
-                 h5(strong("dInter:"), "      difference to original intercept."),
-                 h5(strong("dfb.Inter:"), "   dfbeta of intercept."),
-                 h5(strong("dfb.Slope:"), "   dfbeta of slope."),
-                 h5(strong("dffit:"), "       dffits."),
-                 h5(strong("cov.r:"), "       covariance ratio."),
-                 h5(strong("cook.d:"), "      Cook's distance."),
-                 h5(strong("dfb.Slope:"), "   dfbeta of slope."),
-                 h5(strong("hat:"), "         diagonal of hat matrix."),
-                 h5(strong("hadi:"), "        Hadi's measure."),
-                 h5(strong("sR:"), "          studentized residuals."),
-                 h5(strong("looP:"), "        leave-one-out p-value."),
-                 h5(strong("dP:"), "          difference to full model p-value."),
-                 h5(strong("SE:"), "          standard error of slope."),
-                 h5(strong("dSE:"), "         difference to full model standard error of slope."),
-                 h5(strong("Rsq:"), "         R-square.")),
-        tabPanel("Regression Plot", 
-                 p(""),
-                 h4("Linear Regression Plot with Influential Data."),
-                 h4("Significance reversers are depicted with larger red => yellow points with decreasing effect."),
-                 h4("Mouse over data point to see its x/y value."),
-                 p(""),
-                 verbatimTextOutput("hover_info"),
-                 plotOutput("lmPlot.output", hover = hoverOpts(id = "plot_hover"))),
-        tabPanel("P-Value Plot", 
-                 p(""),
-                 h4("P-value Plot for each Leave-One-Out Data Point."),
-                 h4("Significance reversers will cross the red line!"),
-                 p(""),
-                 plotOutput("pvalPlot.output")),
-        tabPanel("Slope vs. SE Plot", 
-                 p(""),
-                 h4("Slope versus S.E. Plot for each Leave-One-Out Data Point."),
-                 h4("Leave-One-Out of points on the right side of the t-border result in a significant model, 
+                  tabPanel("Statistics", 
+                           p(""),
+                           h4("Message:"),
+                           h5("(The message 'Error: incorrect number of dimensions' would indicate wrong import parameters)"),
+                           verbatimTextOutput("message.output"),
+                           p(""),
+                           h4("Summary of full model (all data points):"),
+                           renderPrint({summary(res.infl()$origModel)}),
+                           p(""),
+                           h4("Statistical Analysis for each Leave-One-Out model. For abbreviations, see below Table."),
+                           output$DT <- DT::renderDataTable(
+                             filtering_DT(signif(res.infl()[["infl"]], 5)), 
+                             options = list(paging = FALSE, searching = FALSE),
+                             rownames = FALSE),
+                           h4("Legend:"),
+                           h5(strong("dSlope:"), "      difference to original slope."),
+                           h5(strong("dInter:"), "      difference to original intercept."),
+                           h5(strong("dfb.Inter:"), "   dfbeta of intercept."),
+                           h5(strong("dfb.Slope:"), "   dfbeta of slope."),
+                           h5(strong("dffit:"), "       dffits."),
+                           h5(strong("cov.r:"), "       covariance ratio."),
+                           h5(strong("cook.d:"), "      Cook's distance."),
+                           h5(strong("dfb.Slope:"), "   dfbeta of slope."),
+                           h5(strong("hat:"), "         diagonal of hat matrix."),
+                           h5(strong("hadi:"), "        Hadi's measure."),
+                           h5(strong("sR:"), "          studentized residuals."),
+                           h5(strong("looP:"), "        leave-one-out p-value."),
+                           h5(strong("dP:"), "          difference to full model p-value."),
+                           h5(strong("SE:"), "          standard error of slope."),
+                           h5(strong("dSE:"), "         difference to full model standard error of slope."),
+                           h5(strong("Rsq:"), "         R-square.")),
+                  tabPanel("Regression Plot", 
+                           p(""),
+                           h4("Linear Regression Plot with Influential Data."),
+                           h4("Significance reversers are depicted with larger red => yellow points with decreasing effect."),
+                           h4("Mouse over data point to see its x/y value."),
+                           p(""),
+                           verbatimTextOutput("hover_info"),
+                           plotOutput("lmPlot.output", hover = hoverOpts(id = "plot_hover"))),
+                  tabPanel("P-Value Plot", 
+                           p(""),
+                           h4("P-value Plot for each Leave-One-Out Data Point."),
+                           h4("Significance reversers will cross the red line!"),
+                           p(""),
+                           plotOutput("pvalPlot.output")),
+                  tabPanel("Slope vs. SE Plot", 
+                           p(""),
+                           h4("Slope versus S.E. Plot for each Leave-One-Out Data Point."),
+                           h4("Leave-One-Out of points on the right side of the t-border result in a significant model, 
                     while points on the left side result in an insignificant model!"),
-                 h4("Dashed lines represent the slope & s.e.(slope) of the full data model."),
-                 plotOutput("slsePlot.output")),
-        tabPanel("Influence Plot", 
-                 p(""),
-                 h4("Influence Measures versus delta-P values Plot for each Leave-One-Out Data Point."),
-                 h4("Significance reversers are depicted as red dots!"),
-                 h4("Often, one can observe significance reversal for data points with Cook's distance/leverage/dfbeta(slope)/dffits/covratio below the commonly applied cut-off values."),
-                 p(""),
-                 plotOutput("inflPlot.output")),
-        tabPanel("Leave-Multiple-Out Plot", 
-                 p(""),
-                 h4("P-value analysis of the regression model when 100000 simulations of 1...5 removed predictor values are conducted."),
-                 h4("Significance reversers are depicted as red dots, percentage of reversal on top."),
-                 p(""),
-                 h4("Please wait 5-10 seconds..."),
-                 plotOutput("multPlot.output")),
-        tabPanel("New Observation Analysis", 
-                 p(""),
-                 h4("Analysis of the prediction interval boundaries and 'ends of significance region' (eosr) of the regression model."),
-                 h4("If a new response value will reside between both, the significance is reversed."),
-                 h4("The probability for this is the integral of a scaled/shifted t-distribution between both."),
-                 p(""),
-                 output$DT <- DT::renderDataTable(signif(res.thresh()$st[["stats"]], 5), 
-                                                  options = list(paging = FALSE, searching = FALSE),
-                                                  rownames = FALSE),
-                 h4("Legend:"),
-                 h5(strong("eosr.1:"), "      lower end of significance region."),
-                 h5(strong("eosr.2:"), "      upper end of significance region."),
-                 h5(strong("lower:"), "       lower prediction interval boundary."),
-                 h5(strong("upper:"), "       upper prediction interval boundary."),
-                 h5(strong("se:"), "          prediction standard error."),
-                 p(""),
-                 h4("New observation significance threshold region plot:"),
-                 h4("Green regions denote those where the model is significant when a new observation is added."),
-                 plotOutput("threshPlot.output"))
+                           h4("Dashed lines represent the slope & s.e.(slope) of the full data model."),
+                           plotOutput("slsePlot.output")),
+                  tabPanel("Influence Plot", 
+                           p(""),
+                           h4("Influence Measures versus delta-P values Plot for each Leave-One-Out Data Point."),
+                           h4("Significance reversers are depicted as red dots!"),
+                           h4("Often, one can observe significance reversal for data points with Cook's distance/leverage/dfbeta(slope)/dffits/covratio below the commonly applied cut-off values."),
+                           p(""),
+                           plotOutput("inflPlot.output")),
+                  tabPanel("Leave-Multiple-Out Plot", 
+                           p(""),
+                           h4("P-value analysis of the regression model when 100000 simulations of 1...5 removed predictor values are conducted."),
+                           h4("Significance reversers are depicted as red dots, percentage of reversal on top."),
+                           p(""),
+                           h4("Please wait 5-10 seconds..."),
+                           plotOutput("multPlot.output")),
+                  tabPanel("New Observation Analysis", 
+                           p(""),
+                           h4("Analysis of the prediction interval boundaries and 'ends of significance region' (eosr) of the regression model."),
+                           h4("If a new response value will reside between both, the significance is reversed."),
+                           h4("The probability for this is the integral of a scaled/shifted t-distribution between both."),
+                           p(""),
+                           output$DT <- DT::renderDataTable(filtering_DT(signif(res.thresh()$st[["stats"]], 5)), 
+                                                            rownames = FALSE),
+                           h4("Legend:"),
+                           h5(strong("eosr.1:"), "      lower end of significance region."),
+                           h5(strong("eosr.2:"), "      upper end of significance region."),
+                           h5(strong("lower:"), "       lower prediction interval boundary."),
+                           h5(strong("upper:"), "       upper prediction interval boundary."),
+                           h5(strong("se:"), "          prediction standard error."),
+                           p(""),
+                           h4("New observation significance threshold region plot:"),
+                           h4("Green regions denote those where the model is significant when a new observation is added."),
+                           plotOutput("threshPlot.output"))
       )
     }
   })
@@ -220,7 +232,7 @@ shinyServer(function(input, output, session) {
       multPlot(lmMult(res.infl()$origModel))
       threshPlot(res.thresh())
       dev.off()    
-  })  
+    })  
   
   output[["stat.download"]] <- downloadHandler(
     filename = "Stats.txt",
