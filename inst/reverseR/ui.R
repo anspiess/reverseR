@@ -1,3 +1,7 @@
+library(shiny)
+library(reverseR)
+library(DT)
+
 fluidPage(
   tags$style(HTML(".shiny-input-container:not(.shiny-input-container-inline) {
                      width: 100%;}
@@ -45,7 +49,8 @@ fluidPage(
     ## download plot, stats and Cook's D
     includeMarkdown("Results.md"),
     downloadButton("plot.download", "Download Plots"),   
-    downloadButton("stat.download", "Download Stats")
+    downloadButton("stat.download", "Download Stats"),
+    includeMarkdown("Authors.md")
   ),
   ## main panel with "dynamic.tabset" output
   column(10, uiOutput("dynamic.tabset")
