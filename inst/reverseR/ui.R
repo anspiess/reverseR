@@ -3,7 +3,7 @@ library(reverseR)
 library(DT)
 
 fluidPage(
-  tags$head(includeHTML("ga.html")),
+  tags$head(includeScript("ga.js")),
   tags$style(HTML(".shiny-input-container:not(.shiny-input-container-inline) {
                      width: 100%;}
                   pre{
