@@ -29,7 +29,7 @@ fluidPage(
     ## file input
     includeMarkdown("Import.md"),
     ## header selection
-    checkboxInput("header", "Data has a Header row", TRUE),
+    checkboxInput("header", "Data has a header row", TRUE),
     ## csv type selection
     radioButtons("dec.type", "Type of decimal sign",
                  choices = c("dot (.)" = "dec1", "comma (,)" = "dec2"),
@@ -51,6 +51,7 @@ fluidPage(
     includeMarkdown("Results.md"),
     downloadButton("plot.download", "Download Plots"),   
     downloadButton("stat.download", "Download Stats"),
+    br(), br(),
     includeMarkdown("Authors.md")
   ),
   ## main panel with "dynamic.tabset" output
