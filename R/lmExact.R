@@ -1,5 +1,6 @@
 lmExact <- function(
   x = 1:20, 
+  y = NULL, 
   ny = 1,
   intercept = 0, 
   slope = 0.1, 
@@ -27,9 +28,14 @@ lmExact <- function(
     errorVec <- error
   }
   
+  ## y input supplied check
+  if (!is.null(y)) {
+    if (length(x) != length(y)) stop("'x' and 'y' must be of same length!")
+  }
+  
   ## define optimizing function for slope
   optFct <- function(slope) {
-    y <- intercept + slope * x + errorVec
+    if (is.null(y)) y <- intercept + slope * x + errorVec
     LM <- lm(y ~ x, ...)
     RESID <- residuals(LM)
     y <- intercept + slope * x + RESID
@@ -51,10 +57,10 @@ lmExact <- function(
       ## This one is taken from http://stats.stackexchange.com/questions/15011/
       ## generate-a-random-variable-with-a-defined-correlation-to-an-existing-variable
       if (rsq < 0 | rsq > 1) stop("R-square must be in [0, 1] !")
-      y <- intercept + slope * x + errorVec
+      if (is.null(y)) y <- intercept + slope * x + errorVec
       rho   <- sqrt(rsq)        
       theta <- acos(rho)  
-      MAT     <- cbind(x, y)  
+      MAT     <- cbind(x, y) 
       scaleMAT  <- scale(MAT, center = TRUE, scale = FALSE)
       Id   <- diag(length(x))                               
       Q    <- qr.Q(qr(scaleMAT[ , 1, drop=FALSE]))  
@@ -70,7 +76,7 @@ lmExact <- function(
       assign("LM", LM, envir = lmEnv)
     }
   else {
-    y <- intercept + slope * x + errorVec
+    if (is.null(y)) y <- intercept + slope * x + errorVec
     LM <- lm(y ~ x, ...)
     RESID <- residuals(LM)
     y <- intercept + slope * x + RESID

@@ -5,7 +5,7 @@
 \title{Create random values that deliver linear regressions with exact parameters}
 
 \description{
-Takes self-supplied or generated random values and transforms these as to deliver linear regressions \eqn{y = \beta_0 + \beta_1x + \varepsilon} (with potential replicates) with either\cr
+Takes self-supplied x/y values or x/random values and transforms these as to deliver linear regressions \eqn{y = \beta_0 + \beta_1x + \varepsilon} (with potential replicates) with either\cr
 
 \bold{1)} exact slope \eqn{\beta_1} and intercept \eqn{\beta_0},\cr
 \bold{2)} exact \emph{p}-value and intercept \eqn{\beta_0}, or\cr
@@ -15,12 +15,13 @@ Intended for testing and education, not for cheating ! ;-)
 }
 
 \usage{
-lmExact(x = 1:20, ny = 1, intercept = 0, slope = 0.1, error = 0.1, 
+lmExact(x = 1:20, y = NULL, ny = 1, intercept = 0, slope = 0.1, error = 0.1, 
         seed = 123, pval = NULL, rsq = NULL, plot = TRUE, verbose = FALSE, ...) 
 }
 
 \arguments{
 \item{x}{the predictor values.}
+\item{y}{\code{NULL}. A possible vector of \eqn{y} values with \code{length(x)}.}
 \item{ny}{the number of replicate response values per predictor value.}
 \item{intercept}{the desired intercept \eqn{\beta_0}.}
 \item{slope}{the desired slope \eqn{\beta_1}.}
@@ -36,7 +37,9 @@ lmExact(x = 1:20, ny = 1, intercept = 0, slope = 0.1, error = 0.1,
 \details{
 For case \bold{1)}, the \code{error} values are added to the exact \eqn{(x_i, \beta_0 + \beta_1 x_i)} values, the linear model \eqn{y_i = \beta_0 + \beta_1 x_i + \varepsilon} is fit, and the residuals \eqn{y_i - \hat{y_i}} are re-added to \eqn{(x_i, \beta_0 + \beta_1 x_i)}.\cr
 For case \bold{2)}, the same as in \bold{1)} is conducted, however the slope delivering the desired \emph{p}-value is found by an optimizing algorithm.\cr
-Finally, for case \bold{3)}, a QR reconstruction, rescaling and refitting is conducted, using the code found under 'References'.
+Finally, for case \bold{3)}, a QR reconstruction, rescaling and refitting is conducted, using the code found under 'References'.\cr
+
+If \code{y} is supplied, changes in slope, intercept and \emph{p}-value will deliver the sames residuals as the linear regression through \code{x} and \code{y}. A different \eqn{R^2} will change the response value structure, however.
 }
 
 \value{
@@ -77,6 +80,14 @@ res4 <- lmExact(x = 1:10, ny = 5, intercept = 1, rsq = 0.85, error = 2)
 error <- sapply(1:20, function(x) rnorm(3, 0, x/10))
 res5 <- lmExact(x = 1:20, ny = 3, intercept = 1, slope = 0.2,
                 error = error)
+                
+## Supply own x/y values, residuals are similar to an
+## initial linear regression.
+X <- c(1.05, 3, 5.2, 7.5, 10.2, 11.7)
+set.seed(123)
+Y <- 0.5 + 2 * X + rnorm(6, 0, 2)
+res6 <- lmExact(x = X, y = Y, intercept = 1, slope = 0.2)
+all.equal(residuals(lm(Y ~ X)), residuals(res6$lm))
 }   
 
 \keyword{optimize}
