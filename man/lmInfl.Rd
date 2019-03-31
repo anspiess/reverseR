@@ -5,7 +5,7 @@
 \title{Checks and analyzes leave-one-out (LOO) p-values in linear regression}
 
 \description{
-This function calculates leave-one-out (LOO) \emph{p}-values for all datapoints and identifies those resulting in "significance reversal", i.e. in the \emph{p}-value of the model's slope traversing the user-defined \eqn{\alpha}-level.
+This function calculates leave-one-out (LOO) \emph{p}-values for all data points and identifies those resulting in "significance reversal", i.e. in the \emph{p}-value of the model's slope traversing the user-defined \eqn{\alpha}-level.
 }
 
 \usage{
@@ -82,7 +82,7 @@ slsePlot(res2)
 stability(res2)
 
 ## Large Example #3 with top 10 influencers and significant model (p = 6.72E-8).
-## Not possible to achieve a crossing of alpha with any point despite of
+## Not possible to achieve a crossing of alpha with any point despite
 ## strong noise.
 set.seed(123)
 a <- 1:100
