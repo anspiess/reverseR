@@ -5,7 +5,7 @@
 \title{Checks and analyzes leave-multiple-out (LMO) p-values in linear regression}
 
 \description{
-This function calculates leave-multiple-out (LMO) \emph{p}-values for an increasing number of datapoints and identifies those resulting in "significance reversal" of the model, i.e. in the slope's \emph{p}-value traversing the user-defined \eqn{\alpha}-level.
+This function calculates leave-multiple-out (LMO) \emph{p}-values for an increasing number of data points and identifies those resulting in "significance reversal" of the model, i.e. in the slope's \emph{p}-value traversing the user-defined \eqn{\alpha}-level.
 }
 
 \usage{
@@ -32,7 +32,7 @@ The algorithm\cr
 
 \value{
 A list with the following items:\cr
-\item{sample}{a matrix with all \code{max * n} iterations, where a 1 indicates the left-out sample(s), as well as the corrsponding \emph{p}-values and group.}
+\item{sample}{a matrix with all \code{max * n} iterations, where a 1 indicates the left-out sample(s), as well as the corresponding \emph{p}-values and group.}
 \item{stat}{for each 1...\code{max} LMO's, the percentage of model significance reversers.}
 }
 
@@ -49,10 +49,9 @@ LM1 <- lm(b ~ a)
 res1 <- lmMult(LM1)
 multPlot(res1)
 stability(res1)
-
+\donttest{
 ## Large example with 100 data points and highly significant model (p = 6.72E-8).
 ## No significance reversal up to the elimination of 20 points.
-\dontrun{
 set.seed(123)
 a <- 1:100
 b <- 5 + 0.08 * a + rnorm(100, 0, 5)

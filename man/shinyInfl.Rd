@@ -25,10 +25,7 @@ Andrej-Nikolai Spiess
 }   
 
 \examples{
-## shinyInfl() # <= to initialize.
-
-## To use the example data.
-cat("Example files are in", system.file("shiny", package = "reverseR")) 
+## shinyInfl() # <= to initialize
 }   
 
 \keyword{optimize}

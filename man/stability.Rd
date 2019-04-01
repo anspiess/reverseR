@@ -67,14 +67,14 @@ integrate(dt.scaled, lower = st1$stats[1, "lower"], st1$stats[1, "upper"],
 ## prediction boundary:
 integrate(dt.scaled, lower = st1$stats[1, "eosr.2"], st1$stats[1, "upper"], 
           df = 18, mu = st1$stats[1, "fitted"], s = st1$stats[1, "se"])
-## => 0.09348983 with absolute error < 1e-15
+## => 0.09264124 with absolute error < 1e-15
 
 ## We can recheck this value by P(B) - P(A):
 pt.scaled <- function(x, df, mu, s) pt((x - mu)/s, df)
 pA <- pt.scaled(x = st1$stats[1, "eosr.2"], df =  18, mu = st1$stats[1, "fitted"], 
                 s = st1$stats[1, "se"])
 0.975 - pA 
-##  => 0.09348983 as above
+##  => 0.09264124 as above
 }   
 
 \keyword{optimize}

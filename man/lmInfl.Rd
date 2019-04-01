@@ -5,7 +5,7 @@
 \title{Checks and analyzes leave-one-out (LOO) p-values in linear regression}
 
 \description{
-This function calculates leave-one-out (LOO) \emph{p}-values for all datapoints and identifies those resulting in "significance reversal", i.e. in the \emph{p}-value of the model's slope traversing the user-defined \eqn{\alpha}-level.
+This function calculates leave-one-out (LOO) \emph{p}-values for all data points and identifies those resulting in "significance reversal", i.e. in the \emph{p}-value of the model's slope traversing the user-defined \eqn{\alpha}-level.
 }
 
 \usage{
@@ -28,7 +28,17 @@ The algorithm\cr
 4) returns all models as well as classical \code{\link{influence.measures}} with LOO-\emph{p}-values, \eqn{\Delta}\emph{p}-values, slopes and standard errors attached.\cr
 If \code{method = "spearman"}, \emph{p}-values are based on Spearman Rank correlation, and the values given in the last column of the result matrix are Spearman's \eqn{\rho}.
 
-The influence output includes the more recent Hadi's measure (column "hadi"):
+The idea of \emph{p}-value influencers was first introduced by Belsley, Kuh & Welsch, and described as an influence measure pertaining directly to the change in \emph{t}-statistics, that will "show whether the conclusions of hypothesis testing would be affected", termed \bold{dfstat} in [1, 2, 3] or \bold{dfstud} in [4]:
+\deqn{\rm{dfstat}_{ij} \equiv \frac{\hat{\beta}_j}{s\sqrt{(X'X)^{-1}_{jj}}}-\frac{\hat{\beta}_{j(i)}}{s_{(i)}\sqrt{(X'_{(i)}X_{(i)})^{-1}_{jj}}}}
+where \eqn{\hat{\beta}_j} is the \emph{j}-th estimate, \emph{s} is the residual standard error, \emph{X} is the design matrix and (\emph{i}) denotes the \emph{i}-th observation deleted.\cr
+\bold{dfstat}, which for the regression's slope \eqn{\beta_1} is the difference of \emph{t}-statistics 
+\deqn{\Delta t = t_{\beta1} - t_{\beta1(i)} = \frac{\beta_1}{\rm{s.e.(\beta_1)}} - \frac{\beta_1(i)}{\rm{s.e.(\beta_1(i)})}}
+is inextricably linked to the changes in \emph{p}-value \eqn{\Delta p}, calculated from
+\deqn{\Delta p = p_{\beta1} - p_{\beta1(i)} = 2\left(1-P_t(t_{\beta1}, \nu)\right) - 2\left(1-P_t(t_{\beta1(i)} , \nu-1)\right)}
+where \eqn{P_t} is the Student's \emph{t} cumulative distribution function with \eqn{\nu} degrees of freedom, and where significance reversal is attained when \eqn{\alpha \in [p_{\beta1}, p_{\beta1(i)}]}.
+Interestingly, in linear regression the seemingly mandatory check of the influence of single data points on statistical inference is living in oblivion: apart from [1-4], there is, to the best of our knowledge, no reference to \bold{dfstat} or \eqn{\Delta p} in current literature on influence measures.
+
+The influence output also includes the more recent Hadi's measure (column "hadi"):
 \deqn{H_i = \frac{p_{ii}}{1 - p_{ii}} + \frac{k}{1 - p_{ii}}\frac{d_i^2}{(1-d_i^2)}}
 where \eqn{p_{ii}} are the diagonals of the hat matrix (leverages), \eqn{k = 2} in univariate linear regression and \eqn{d_i = e_i/\sqrt{\rm{SSE}}}.
 }
@@ -49,9 +59,27 @@ Andrej-Nikolai Spiess
 }   
 
 \references{
+\bold{For dfstat / dfstud :}\cr
+1. Regression diagnostics: Identifying influential data and sources of collinearity.\cr
+Belsley DA, Kuh E, Welsch RE.\cr
+John Wiley, New York, USA (2004).\cr
+
+2. Econometrics, 5ed.\cr
+Baltagi B.\cr
+Springer-Verlag Berlin, Germany (2011).\cr
+
+3. Growth regressions and what the textbooks don't tell you.\cr
+Temple J.\cr
+\emph{Bull Econom Res}, \bold{52}, 2000, 181-205.\cr
+
+4. Robust Regression and Outlier Detection.\cr
+Rousseeuw PJ & Leroy AM.\cr
+John Wiley & Sons, New York, NY (1987).\cr
+
+\bold{Hadi's measure:}\cr
 A new measure of overall potential influence in linear regression.\cr
 Hadi AS.\cr
-Comp Stat & Data Anal, \bold{14}, 1992, 1-27.
+\emph{Comp Stat & Data Anal}, \bold{14}, 1992, 1-27.
 }
 
 \examples{
@@ -82,8 +110,7 @@ slsePlot(res2)
 stability(res2)
 
 ## Large Example #3 with top 10 influencers and significant model (p = 6.72E-8).
-## Not possible to achieve a crossing of alpha with any point despite of
-## strong noise.
+## Not possible to achieve a crossing of alpha with any point despite strong noise.
 set.seed(123)
 a <- 1:100
 b <- 5 + 0.08 * a + rnorm(100, 0, 5)

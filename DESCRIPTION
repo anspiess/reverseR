@@ -4,11 +4,12 @@ LazyLoad: no
 LazyData: yes
 Title: Linear Regression Stability to Significance Reversal
 Version: 0.1
-Date: 2018-10-24
+Date: 2019-04-01
 Author: Andrej-Nikolai Spiess <a.spiess@uke.uni-hamburg.de>
         Michal Burdukiewicz <michalburdukiewicz@gmail.com>  
+        Stefan Roediger [aut] <stefan.roediger@b-tu.de>
 Maintainer: Andrej-Nikolai Spiess <a.spiess@uke.uni-hamburg.de>
-Description: Tests linear regressions for significance reversal through leave-one(multiple)-out and shifting/addition of response values.
+Description: Tests linear regressions for significance reversal through leave-one(multiple)-out and shifting/addition of response values. The paradigm of the package is loosely based on the somewhat forgotten "dfstat" criterion (Belsley, Kuh & Welsch 1980 <doi:10.1002/0471725153.ch2>), which tests influential values in linear models from their effect on statistical inference, i.e. changes in p-value.
 License: GPL (>= 2)
 Depends: R (>= 2.13.0), shiny, markdown, knitr
 Imports: DT

@@ -15,7 +15,7 @@ simInfl(x = 1:10, slope = 0.02, intercept = 1, error = 0.05, nrev = 1000, ...)
 \arguments{
 \item{x}{the \eqn{x} values to be supplied to \code{\link{lmExact}}.}
 \item{slope}{the slope \eqn{\beta_1} to be supplied to \code{\link{lmExact}}.}
-\item{intercept}{the interecept \eqn{\beta_0} to be supplied to \code{\link{lmExact}}.}
+\item{intercept}{the intercept \eqn{\beta_0} to be supplied to \code{\link{lmExact}}.}
 \item{error}{the \eqn{\varepsilon} value to be supplied to \code{\link{lmExact}}.}
 \item{nrev}{the number of desired significance reversals.}
 \item{...}{other parameters to \code{\link{lmExact}} and \code{\link{lmInfl}}.}
@@ -36,9 +36,8 @@ Andrej-Nikolai Spiess
 }   
 
 \examples{
-\dontrun{
-## Example with slight slope, intercept = 0.5 and 100 reversals.
-res <- simInfl(x = 1:10, interecept = 0.5, slope = 0.02, error = 0.05, nrev = 100)
+## Example with slight slope, intercept = 0.5 and 10 reversals.
+res <- simInfl(x = 1:10, intercept = 0.5, slope = 0.02, error = 0.05, nrev = 10)
 
 ## Plot Cook's D versus delta-P values
 ## and insert common cut-off.
@@ -59,6 +58,15 @@ abline(v = thresh, col = "darkred", lwd = 2)
 plot(abs(res$mat[, "dffit"]), res$mat[, "dP"], pch = 16, cex = 0.5,
      xlab = "dffits", ylab = "delta-P")
 thresh <- 2 * sqrt(2/10)  # 2 * sqrt(nPar/N)
+abline(v = thresh, col = "darkred", lwd = 2)  
+
+\donttest{
+## More illustrative with more reverser samples!
+## Example with slight slope, intercept = 0.5 and 10 reversals.
+res <- simInfl(x = 1:10, intercept = 0.5, slope = 0.02, error = 0.05, nrev = 200)
+plot(res$mat[, "cook.d"], res$mat[, "dP"], pch = 16, cex = 0.5,
+     xlab = "Cook's D", ylab = "delta-P")
+thresh <- qf(0.5, 2, 8)  # threshold value for Qf(0.5, npar, df)
 abline(v = thresh, col = "darkred", lwd = 2)  
 }
 }   
