@@ -4,9 +4,10 @@ LazyLoad: no
 LazyData: yes
 Title: Linear Regression Stability to Significance Reversal
 Version: 0.1
-Date: 2018-10-24
+Date: 2019-01-04
 Author: Andrej-Nikolai Spiess <a.spiess@uke.uni-hamburg.de>
-        Michal Burdukiewicz <michalburdukiewicz@gmail.com>  
+        Michal Burdukiewicz <michalburdukiewicz@gmail.com>
+        Stefan Roediger <stefan.roediger@b-tu.de>  
 Maintainer: Andrej-Nikolai Spiess <a.spiess@uke.uni-hamburg.de>
 Description: Tests linear regressions for significance reversal through leave-one(multiple)-out and shifting/addition of response values.
 License: GPL (>= 2)
