@@ -9,13 +9,12 @@ This function calculates leave-one-out (LOO) \emph{p}-values for all data points
 }
 
 \usage{
-lmInfl(model, alpha = 0.05, method = c("pearson", "spearman"), verbose = TRUE, ...) 
+lmInfl(model, alpha = 0.05, verbose = TRUE, ...) 
 }
 
 \arguments{
 \item{model}{the linear model of class \code{\link{lm}}.}
 \item{alpha}{the \eqn{\alpha}-level to use as the threshold border.}
-\item{method}{select either parametric (\code{"pearson"}) or rank-based (\code{"spearman"}) statistics.}
 \item{verbose}{logical. If \code{TRUE}, results are displayed on the console.}
 \item{...}{other arguments to \code{\link{lm}}.}
 }
@@ -26,7 +25,6 @@ The algorithm\cr
 2) calculates a LOO-\emph{p}-value for each point removed,\cr
 3) checks for significance reversal in all data points and\cr
 4) returns all models as well as classical \code{\link{influence.measures}} with LOO-\emph{p}-values, \eqn{\Delta}\emph{p}-values, slopes and standard errors attached.\cr
-If \code{method = "spearman"}, \emph{p}-values are based on Spearman Rank correlation, and the values given in the last column of the result matrix are Spearman's \eqn{\rho}.
 
 The idea of \emph{p}-value influencers was first introduced by Belsley, Kuh & Welsch, and described as an influence measure pertaining directly to the change in \emph{t}-statistics, that will "show whether the conclusions of hypothesis testing would be affected", termed \bold{dfstat} in [1, 2, 3] or \bold{dfstud} in [4]:
 \deqn{\rm{dfstat}_{ij} \equiv \frac{\hat{\beta}_j}{s\sqrt{(X'X)^{-1}_{jj}}}-\frac{\hat{\beta}_{j(i)}}{s_{(i)}\sqrt{(X'_{(i)}X_{(i)})^{-1}_{jj}}}}
@@ -36,10 +34,10 @@ where \eqn{\hat{\beta}_j} is the \emph{j}-th estimate, \emph{s} is the residual 
 is inextricably linked to the changes in \emph{p}-value \eqn{\Delta p}, calculated from
 \deqn{\Delta p = p_{\beta1} - p_{\beta1(i)} = 2\left(1-P_t(t_{\beta1}, \nu)\right) - 2\left(1-P_t(t_{\beta1(i)} , \nu-1)\right)}
 where \eqn{P_t} is the Student's \emph{t} cumulative distribution function with \eqn{\nu} degrees of freedom, and where significance reversal is attained when \eqn{\alpha \in [p_{\beta1}, p_{\beta1(i)}]}.
-Interestingly, in linear regression the seemingly mandatory check of the influence of single data points on statistical inference is living in oblivion: apart from [1-4], there is, to the best of our knowledge, no reference to \bold{dfstat} or \eqn{\Delta p} in current literature on influence measures.
+Interestingly, the seemingly mandatory check of the influence of single data points on statistical inference is living in oblivion: apart from [1-4], there is, to the best of our knowledge, no reference to \bold{dfstat} or \eqn{\Delta p} in current literature on influence measures.
 
 The influence output also includes the more recent Hadi's measure (column "hadi"):
-\deqn{H_i = \frac{p_{ii}}{1 - p_{ii}} + \frac{k}{1 - p_{ii}}\frac{d_i^2}{(1-d_i^2)}}
+\deqn{H_i^2 = \frac{p_{ii}}{1 - p_{ii}} + \frac{k}{1 - p_{ii}}\frac{d_i^2}{(1-d_i^2)}}
 where \eqn{p_{ii}} are the diagonals of the hat matrix (leverages), \eqn{k = 2} in univariate linear regression and \eqn{d_i = e_i/\sqrt{\rm{SSE}}}.
 }
 
@@ -47,7 +45,8 @@ where \eqn{p_{ii}} are the diagonals of the hat matrix (leverages), \eqn{k = 2} 
 A list with the following items:\cr
 \item{origModel}{the original model with all data points.} 
 \item{finalModels}{a list of final models with the influencer(s) removed.}
-\item{infl}{a matrix with the original data, classical \code{\link{influence.measures}}, studentized residuals, leverages, LOO-\emph{p}-values, LOO-slopes/intercepts and their \eqn{\Delta}'s, LOO-standard errors and \eqn{R^2}s.}
+\item{infl}{a matrix with the original data, classical \code{\link{influence.measures}}, studentized residuals, leverages, LOO-\emph{p}-values, LOO-slopes/intercepts and their \eqn{\Delta}'s, LOO-standard errors and \eqn{R^2}s. Influence measures that exceed their specific threshold - see \code{\link{inflPlot}} - will be marked with asterisks.}
+\item{raw}{same as \code{infl}, but with pure numeric data.}
 \item{sel}{a vector with the influencers' indices.}
 \item{alpha}{the selected \eqn{\alpha}-level.}
 \item{origP}{the original model's \emph{p}-value.}

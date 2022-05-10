@@ -1,14 +1,12 @@
-lmInfl <- function(model, alpha = 0.05, method = c("pearson", "spearman"), verbose = TRUE, ...) {
+lmInfl <- function(model, alpha = 0.05, verbose = TRUE, ...) {
   
   if (class(model) != "lm") stop("Not an 'lm' model!")
-  method <- match.arg(method)
   
   ## original parameters
   DATA <- eval(model$model)
   X <- DATA[, 2]
   Y <- DATA[, 1]
-  PVAL.old <- if (method == "pearson") summary(model)$coefficients[2, 4] 
-              else suppressWarnings(cor.test(X, Y, method = "spearman")$p.value)
+  PVAL.old <- summary(model)$coefficients[2, 4]
   SLOPE.old <- coef(model)[2]
   INTER.old <- coef(model)[1]
   SE.old <- summary(model)$coefficients[2, 2]
@@ -35,9 +33,7 @@ lmInfl <- function(model, alpha = 0.05, method = c("pearson", "spearman"), verbo
   
   ## get coefficients, p-values, slopes and s.e.(slope)
   Coef <- sapply(modList, function(x) coef(x))
-  PVAL.loo <- if (method == "pearson") sapply(modList, function(x) summary(x)$coefficients[2, 4])
-              else sapply(modList, function(x) suppressWarnings(cor.test(x$model[, 1], x$model[, 2],
-                                                                         method = "spearman")$p.value))
+  PVAL.loo <- sapply(modList, function(x) summary(x)$coefficients[2, 4])
   deltaP <- abs(PVAL.old - PVAL.loo)
   Slope <- sapply(modList, function(x)  summary(x)$coefficients[2, 1])
   Inter <- sapply(modList, function(x)  summary(x)$coefficients[1, 1])
@@ -45,16 +41,15 @@ lmInfl <- function(model, alpha = 0.05, method = c("pearson", "spearman"), verbo
   deltaSlope <- abs(Slope - SLOPE.old)
   deltaInter <- abs(Inter - INTER.old)
   deltaSE <- abs(SE - SE.old)
-  RSQ.loo <- if (method == "pearson") sapply(modList, function(x) summary(x)$r.squared)
-             else sapply(modList, function(x) suppressWarnings(cor.test(x$model[, 1], x$model[, 2],
-                                                             method = "spearman")$estimate))
+  RSQ.loo <- sapply(modList, function(x) summary(x)$r.squared)
   SR <- rstudent(model)
   
   ## define Hadi's measure
   hadi <- function(model) {
     h <- hatvalues(model)
     di <- residuals(model)/sqrt(sum(residuals(model)^2))
-    h/(1-h) + 2/(1-h) * di^2/(1-di^2) 
+    k <- length(coef(model))
+    h/(1 - h) + k/(1 - h) * di^2/(1 - di^2) 
   }
   HADI <- hadi(model)
   
@@ -64,8 +59,51 @@ lmInfl <- function(model, alpha = 0.05, method = c("pearson", "spearman"), verbo
   inflMat <- cbind(Idx = 1:nrow(DATA), DATA[, c(2, 1)], Slope = Coef[2, ], Inter = Coef[1, ], 
                    dSlope = deltaSlope, dInter = deltaInter, INFL, hadi = HADI, sR = SR, looP = PVAL.loo, 
                    dP = deltaP, SE = SE, dSE = deltaSE, Rsq = RSQ.loo)
-  if (method == "spearman") colnames(inflMat)[20] <- "rho"
   rownames(inflMat) <- 1:length(X)
+  inflMat <- round(inflMat, 3)
+  rawMat <- inflMat
+  N <- nrow(inflMat)
+  
+  ## mark influence measures with *...* based on thresholds
+  ## Crit 01: P-value reversal
+  P <- inflMat[, 16]
+  if (PVAL.old <= 0.05) sel <- which(P > 0.05) else sel <- which(P <= 0.05)
+  if (length(sel) > 0) inflMat[sel, 16] <- paste("*", inflMat[sel, 16], "*", sep = "")
+  
+  ## Crit 02: dfbeta slope
+  DFB <- inflMat[, 9]
+  sel <- which(abs(DFB) > 2/sqrt(N))
+  if (length(sel) > 0) inflMat[sel, 9] <- paste("*", inflMat[sel, 9], "*", sep = "")
+  
+  ## Crit 03: dffit
+  DFF <- inflMat[, 10]
+  sel <- which(abs(DFF) > 2 * sqrt(2/N))
+  if (length(sel) > 0) inflMat[sel, 10] <- paste("*", inflMat[sel, 10], "*", sep = "")
+  
+  ## Crit 04: covr
+  COVR <- inflMat[, 11]
+  sel <- which(abs(COVR - 1) > 3 * 2/N)
+  if (length(sel) > 0) inflMat[sel, 11] <- paste("*", inflMat[sel, 11], "*", sep = "")
+ 
+  ## Crit 05: Cook's D
+  COOK <- inflMat[, 12]
+  sel <- which(COOK > qf(0.5, 2, N - 2))
+  if (length(sel) > 0) inflMat[sel, 12] <- paste("*", inflMat[sel, 12], "*", sep = "")
+  
+  ## Crit 05: Leverage
+  HAT <- inflMat[, 13]
+  sel <- which(HAT > 2 * 2/N)
+  if (length(sel) > 0) inflMat[sel, 13] <- paste("*", inflMat[sel, 13], "*", sep = "")
+  
+  ## Crit 06: Studentized residuals
+  SR <- inflMat[, 15]
+  sel <- which(abs(SR) > qt(0.975, N - 2 - 1))
+  if (length(sel) > 0) inflMat[sel, 15] <- paste("*", inflMat[sel, 15], "*", sep = "")
+ 
+  ## Crit 06: Hadi's measure
+  HADI <- inflMat[, 14]
+  sel <- which(HADI > median(HADI, na.rm = TRUE) + 2 * mad(HADI, na.rm = TRUE))
+  if (length(sel) > 0) inflMat[sel, 14] <- paste("*", inflMat[sel, 14], "*", sep = "")
   
   ## select all influencers 
   if (change == "up") SEL <- which(PVAL.loo > alpha)
@@ -82,7 +120,7 @@ lmInfl <- function(model, alpha = 0.05, method = c("pearson", "spearman"), verbo
     
     ## print ordered influencers
     if (verbose) {
-      for (i in ordSEL) cat("  Point #", i, " => p = ", inflMat[i, "looP"], ".\n", sep = "")
+      for (i in ordSEL) cat("  Point #", i, " => p = ", rawMat[i, "looP"], ".\n", sep = "")
     }  
   }  
   else {
@@ -91,8 +129,7 @@ lmInfl <- function(model, alpha = 0.05, method = c("pearson", "spearman"), verbo
     ordSEL <- NULL
   }
   
-  OUT <- list(origModel = model, finalModels = modList, infl = inflMat, 
-              sel = ordSEL, alpha = alpha, origP = PVAL.old)
+  OUT <- list(origModel = model, finalModels = modList, infl = inflMat, raw = rawMat, sel = ordSEL, alpha = alpha, origP = PVAL.old)
   class(OUT) <- "influencers"
   return(OUT)
 }
@@ -129,7 +166,7 @@ pvalPlot <- function(infl, ...) {
   if (class(infl) != "influencers") stop("object is not a result of 'lmInfl' !")
   
   ## extract leave-one-out p-values
-  looP <- infl$infl[, "looP"]
+  looP <- infl$raw[, "looP"]
   
   ## plot p-values
   par(mar = c(5, 5, 4, 2))
@@ -156,13 +193,14 @@ inflPlot <- function(infl, ...) {
   if (class(infl) != "influencers") stop("object is not a result of 'lmInfl' !")
  
   ## extract influence values
-  df_a <- abs(infl$infl[, "dfb.Slope"])
-  df_fit <- abs(infl$infl[, "dffit"])
-  cov_r <- abs(infl$infl[, "cov.r"])
-  cook_D <- infl$infl[, "cook.d"]
-  lev <-  infl$infl[, "hat"]
-  SR <- abs(infl$infl[, "sR"])
-  dP <- infl$infl[, "dP"]
+  df_a <- abs(infl$raw[, "dfb.Slope"])
+  df_fit <- abs(infl$raw[, "dffit"])
+  cov_r <- abs(infl$raw[, "cov.r"])
+  cook_D <- infl$raw[, "cook.d"]
+  lev <-  infl$raw[, "hat"]
+  SR <- abs(infl$raw[, "sR"])
+  dP <- infl$raw[, "dP"]
+  hadi <- infl$raw[, "hadi"]
   
   ## define sample size
   FITTED <- fitted(Model)
@@ -171,7 +209,7 @@ inflPlot <- function(infl, ...) {
   dF <- df.residual(Model)
   
   ## plot influence values vs. delta p-value
-  par(mfrow = c(2, 3))
+  par(mfrow = c(2, 4))
   par(mar = (c(5, 4, 1, 1)))
   
   ## dfslope
@@ -199,10 +237,7 @@ inflPlot <- function(infl, ...) {
   plot(cook_D, dP, pch = 16, xlab = "CookD", ylab = "delta P-value", 
        las = 1, ylim = c(0, max(dP, na.rm = TRUE)), ...)
   points(cook_D[infl$sel], dP[infl$sel], pch = 16, col = "red3", cex = 1.5, ...)
-  thresh1 <- qf(0.5, nPar, dF)  # Qf(0.5, k, n - k)
-  abline(v = thresh1, col = "darkgreen", lwd = 2, ...)  
-  thresh2 <- 4/(N-nPar)
-  abline(v = thresh2, col = "darkgreen", lwd = 2, ...)  
+  abline(v = qf(0.5, nPar, dF), col = "darkgreen", lwd = 2, ...)  
   grid()
   
   ## leverage
@@ -217,6 +252,13 @@ inflPlot <- function(infl, ...) {
        las = 1, ylim = c(0, max(dP, na.rm = TRUE)), ...)
   points(SR[infl$sel], dP[infl$sel], pch = 16, col = "red3", cex = 1.5, ...)
   abline(v = qt(0.975, dF - 1), col = "darkgreen", lwd = 2, ...) # qt(1-alpha/2, df - 1)
+  grid()
+  
+  ## Hadi's measure
+  plot(hadi, dP, pch = 16, xlab = "Hadi's measure", ylab = "delta P-value", 
+       las = 1, ylim = c(0, max(dP, na.rm = TRUE)), ...)
+  points(hadi[infl$sel], dP[infl$sel], pch = 16, col = "red3", cex = 1.5, ...)
+  abline(v = median(hadi, na.rm = TRUE) + 2 * mad(hadi, na.rm = TRUE), col = "darkgreen", lwd = 2, ...) # 
   grid()
   
   ## recover default values

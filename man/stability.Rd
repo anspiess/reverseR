@@ -2,10 +2,10 @@
 \alias{stability}
 \encoding{latin1}
 
-\title{Calculates stability values for results of 'lmInfl', 'lmMult' and 'lmThresh'}
+\title{Calculates stability values for results of 'lmInfl' and 'lmThresh'}
 
 \description{
-This function calculates stability values for LOO (\code{\link{lmInfl}}), LMO (\code{\link{lmMult}}) and response value shifting/addition (\code{\link{lmThresh}}).
+This function calculates stability values for LOO (\code{\link{lmInfl}}), and response value shifting/addition (\code{\link{lmThresh}}).
 }
 
 \usage{
@@ -13,7 +13,7 @@ stability(x, pval = FALSE, ...)
 }
 
 \arguments{
-\item{x}{a result of either \code{\link{lmInfl}}, \code{\link{lmMult}} or \code{\link{lmThresh}}.}
+\item{x}{a result of either \code{\link{lmInfl}} or \code{\link{lmThresh}}.}
 \item{pval}{logical. If \code{TRUE}, for \code{\link{lmThresh}}, objects an exact \emph{p}-value is calculated for a future response to reverse significance.}
 \item{...}{other parameters, not yet implemented.}
 }
@@ -21,8 +21,6 @@ stability(x, pval = FALSE, ...)
 \details{
 For results of \code{\link{lmInfl}}:\cr
 A [0, 1]-bounded stability measure \eqn{S = 1-\frac{n}{N}}, with \eqn{n} = number of influencers (significance reversers) and \eqn{N} = total number of response values.\cr\cr
-For results of \code{\link{lmMult}}:\cr
-For each 1...\code{max}, the percentage of all resamples that did *NOT* result in significance reversal.\cr\cr
 For results of \code{\link{lmThresh}}:\cr
 A [0, 1]-bounded stability measure \eqn{S = 1-\frac{n}{N}}, with \eqn{n} = number of response values where one of the ends of the significance region is within the prediction interval and \eqn{N} = total number of response values.\cr
 If \code{pval = TRUE}, the exact \emph{p}-value is calculated in the following manner:\cr

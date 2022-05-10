@@ -8,13 +8,6 @@ stability <- function(x, pval = FALSE, ...) {
     statDat <- NULL
   }
   
-  ## for results of 'lmMult'
-  else if (!is.na(class(x$sample)[2])) {
-    stab <- 100 - x$stat
-    logVec <- NULL
-    statDat <- NULL
-  }
-  
   ## for results of 'lmThresh'
   else if (class(x) == "threshsearch") {
     ## get original data

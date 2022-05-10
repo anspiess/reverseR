@@ -30,8 +30,7 @@ simInfl <- function(
   ## loop until isRev = nrev
   for (i in 1:1000000) {
     ## create exact model 
-    LME <- lmExact(x = x, slope = slope, intercept = intercept, 
-                   error = error, plot = FALSE, seed = i, verbose = FALSE, ...)
+    LME <- lmExact(x = x, slope = slope, intercept = intercept, error = error, plot = FALSE, seed = i, verbose = FALSE, ...)
     
     ## get reversal results
     RES <- lmInfl(LME$lm, verbose = FALSE, ...)
@@ -40,7 +39,7 @@ simInfl <- function(
     seedVec[i] <- i
     pVec[i] <- RES$origP
     if (!is.null(RES$sel)) {
-      MAT[i, ] <- as.numeric(RES$infl[RES$sel[1], ])
+      MAT[i, ] <- as.numeric(RES$raw[RES$sel[1], ])
       mList[[i]] <- LME$lm
       isRev <- isRev + 1
       counter(isRev)
@@ -51,7 +50,7 @@ simInfl <- function(
   }
  
   ## create result list
-  colnames(MAT) <- colnames(RES$infl)
+  colnames(MAT) <- colnames(RES$raw)
   MAT <- cbind(seed = seedVec, origP = pVec, MAT)
   
   ## condense result matrix & model list
