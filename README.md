@@ -10,14 +10,14 @@ In biomedical literature, the most widely employed statistical procedure to anal
 *covratio*  
 *Cook's distance*  
 *studentized residuals*  
+*Hadi's measure*
 
 We call these data points **"reversers"**. `reverseR` tests linear regressions for significance reversal through leave-one(multiple)-out and checking if $\alpha \in [p_{\beta1}, p_{\beta1(i)}]$, where $p_{\beta1}$ is the *p*-value of the regression's slope and $p_{\beta1(i)}$ is the *p*-value with the *i*-th point deleted. This paradigm is along the lines of the living-in-oblivion measure *dfstat* or *dfstud* (Belsley, Kuh & Welsch, Regression diagnostics: Identifying influential data and sources of collinearity, 2004) that checks the impact of each response value on statistical inference.
 
 ## Repo Contents
 - [R](./R): `R` package code.
 - [man](./man): package manuals for the different functions.
-- [inst/reverseR](./tests): files for the Shiny-based GUI.
-              
+
 ## Hardware Requirements
 The `reverseR` package requires only a standard computer with enough RAM to support the operations defined by a user. For minimal performance, this will be a computer with about 4 GB of RAM. For optimal performance, we recommend a computer with the following specs: RAM: 16+ GB; CPU: 4+ Cores, 3.3+ GHz/Core.
 
@@ -34,7 +34,7 @@ Runtimes vary for the different functions:
 ## Package dependencies
 Users should install the following packages prior to installing `reverseR`, from an `R` terminal:
 ```
-install.packages(c("shiny", "markdown", "knitr"))
+install.packages(c("markdown", "knitr"))
 ```
 ## Installation Guide
 From an `R` session, type:
@@ -42,12 +42,4 @@ From an `R` session, type:
 if (!'devtools' %in% installed.packages()) install.packages(devtools)
 devtools::install_github("anspiess/reverseR")
 source("https://install-github.me/anspiess/reverseR")
-```
-
-## Running the GUI
-
-The reverseR package has a fully functional shiny GUI which covers all functionality of the the package. To invoke the GUI within dedicated R IDEs (e.g., RStudio, RKWard) or a browser run the following line from the R command line.
-```
-library(reverseR)
-shinyInfl()
 ```

@@ -1,3 +1,10 @@
 reverseR 0.1 (16-02-2017)
 
 * first package version
+
+reverseR 0.2 (10-05-2022)
+
+* many small changes in existing functions
+* added 'bootLM' (bootstrap) and 'jackLM' (jackknife)
+* added PNAS 2015 dataset
+* removed 'shinyInfl' as 'lmInfl' suffices for the analysis
