@@ -1,7 +1,7 @@
 stability <- function(x, pval = FALSE, ...) {
   
   ## for results of 'lmInfl'
-  if (class(x) == "influencers") {
+  if (as.character(class(x)) == "influencers") {
     stab <- 1 - (length(x$sel)/nrow(model.frame(x$origModel)))
     logVec <- rep(F, nrow(model.frame(x$origModel)))
     logVec[x$sel] <- TRUE
@@ -9,7 +9,7 @@ stability <- function(x, pval = FALSE, ...) {
   }
   
   ## for results of 'lmThresh'
-  else if (class(x) == "threshsearch") {
+  else if (as.character(class(x)) == "threshsearch") {
     ## get original data
     Model <- x$model
     DATA <- model.frame(Model); X <- DATA[, 2]; Y <- DATA[, 1]

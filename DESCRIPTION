@@ -8,9 +8,9 @@ Date: 2022-05-07
 Author: Andrej-Nikolai Spiess <aspiess@soilytix.com>
         Michal Burdukiewicz <michalburdukiewicz@gmail.com>  
         Stefan Roediger [aut] <stefan.roediger@b-tu.de>
-Maintainer: Andrej-Nikolai Spiess <a.spiess@uke.uni-hamburg.de>
+Maintainer: Andrej-Nikolai Spiess <aspiess@soilytix.com>
 Description: Tests linear regressions for significance reversal through leave-one(multiple)-out.
 License: GPL (>= 2)
 Depends: R (>= 3.5.0), shiny, markdown, knitr, boot, boot.pval
-Imports: DT
+Imports: 
 NeedsCompilation: no
