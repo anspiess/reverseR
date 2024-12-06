@@ -1,13 +1,14 @@
 ## Jackknife function according to Quenouille 1956
-jackLM <- function(formula, data = NULL, alpha = 0.05) {
-  lmOrig <- lm(formula, data = data)
+jackLM <- function(model, alpha = 0.05) {
+  lmOrig <- model
   DATA <- model.frame(lmOrig)
   N <- nrow(DATA)
   coefOrig <- coef(lmOrig)
   coefMat <- pseudoMat <- matrix(NA_real_, nrow = N, ncol = 2)
+  FORM <- formula(lmOrig)
   
   for (i in 1:N) {
-    lmJack <- lm(formula, data = DATA[-i, ])
+    lmJack <- lm(FORM, data = DATA[-i, ])
     coefJack <- coef(lmJack)
     coefMat[i, ] <- coefJack
     pseudoMat[i, ] <- (N * coefOrig) - ((N - 1) * coefJack)

@@ -16,7 +16,7 @@ Intended for testing and education, not for cheating ! ;-)
 
 \usage{
 lmExact(x = 1:20, y = NULL, ny = 1, intercept = 0, slope = 0.1, error = 0.1, 
-        seed = 123, pval = NULL, rsq = NULL, plot = TRUE, verbose = FALSE, ...) 
+        seed = NULL, pval = NULL, rsq = NULL, plot = TRUE, verbose = FALSE, ...) 
 }
 
 \arguments{
@@ -26,7 +26,7 @@ lmExact(x = 1:20, y = NULL, ny = 1, intercept = 0, slope = 0.1, error = 0.1,
 \item{intercept}{the desired intercept \eqn{\beta_0}.}
 \item{slope}{the desired slope \eqn{\beta_1}.}
 \item{error}{if a single value, the standard deviation \eqn{\sigma} for sampling from a normal distribution, or a user-supplied vector of length \code{x} with random deviates.}
-\item{seed}{the random generator seed for reproducibility.}
+\item{seed}{optional. The random generator seed for reproducibility.}
 \item{pval}{the desired \emph{p}-value of the slope.}
 \item{rsq}{the desired \eqn{R^2}.}
 \item{plot}{logical. If \code{TRUE}, the linear regression is plotted.}

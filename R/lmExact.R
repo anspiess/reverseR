@@ -5,7 +5,7 @@ lmExact <- function(
   intercept = 0, 
   slope = 0.1, 
   error = 0.1, 
-  seed = 123,
+  seed = NULL,
   pval = NULL,
   rsq = NULL,
   plot = TRUE, 
@@ -20,7 +20,7 @@ lmExact <- function(
   
   ## create error vector, either s.d. fraction or own vector
   if (length(error) == 1) {
-    set.seed(seed)
+    if (!is.null(seed)) set.seed(seed)
     errorVec <- rnorm(length(x), 0, error)
   } else {
     error <- as.numeric(error)

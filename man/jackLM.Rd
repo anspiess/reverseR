@@ -2,19 +2,18 @@
 \alias{jackLM}
 \encoding{latin1}
 
-\title{Jackknife linear model according to Quenouille 1956}
+\title{Jackknife linear model}
 
 \description{
-Jackknife (Leave-One-Out) method for parameter estimation and confidence interval of a linear model. 
+Jackknife (Leave-One-Out) method for parameter estimation and confidence interval of a linear model, according to Quenouille (1956). 
 }
 
 \usage{
-jackLM(formula, data = NULL, alpha = 0.05) 
+jackLM(model, alpha = 0.05) 
 }
 
 \arguments{
-\item{formula}{a formula of type \code{y ~ x} for the linear model.}
-\item{data}{an optional data frame, list or environment containing the variables in the model.}
+\item{model}{an \code{\link{lm}} model.}
 \item{alpha}{the \eqn{\alpha}-level to use as the threshold border.}
 }
 
@@ -37,7 +36,7 @@ Quenouille MH.\cr
 }
 
 \examples{
-## Example #1 with single influencers and insignificant model (p = 0.115).
+## Example with single influencer (#18) and insignificant model (p = 0.115).
 ## Jackknife estimates are robust w.r.t. outlier #18.
 set.seed(123)
 a <- 1:20
